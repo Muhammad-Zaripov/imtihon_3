@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:imtihon_3/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../models/user_model.dart';
 
 class UserLocalDatasource {
   Future<void> setUser(UserModel user) async {

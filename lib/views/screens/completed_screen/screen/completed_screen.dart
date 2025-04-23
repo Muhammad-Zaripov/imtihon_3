@@ -10,25 +10,27 @@ class CompletedScreen extends StatefulWidget {
 }
 
 class _CompletedScreenState extends State<CompletedScreen> {
-  final controller = AppointmentController();
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    controller.init().then((_) {
-      setState(() {});
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final completedAppointments = controller.getByStatus("completed");
+    final completedAppointments = AppointmentViewmodel().getByStatus(
+      "completed",
+    );
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
     return ListView.separated(
-      padding: EdgeInsets.all(16),
       itemCount: completedAppointments.length,
       separatorBuilder: (context, index) => SizedBox(height: 12),
       itemBuilder: (context, index) {
-        return CompletedWidget(appointment: completedAppointments[index]);
+        final appo = completedAppointments[index];
+        return CompletedWidget(appo: appo);
       },
     );
   }

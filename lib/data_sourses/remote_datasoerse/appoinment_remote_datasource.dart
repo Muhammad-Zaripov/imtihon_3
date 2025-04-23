@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:imtihon_3/models/appoinment_models.dart';
 import 'package:http/http.dart' as http;
+
+import '../../models/appoinment_models.dart';
 
 class AppoinmentRemoteDatasource {
   final _baseUrl =
@@ -66,6 +67,37 @@ class AppoinmentRemoteDatasource {
     } catch (e, s) {
       print("xato updateAppoinment - $e");
       print("joy updateAppoinment - $s");
+    }
+    return false;
+  }
+
+  Future<AppointmentModel?> getAppFromId(String id) async {
+    try {
+      final url = Uri.parse("$_baseUrl/$id.json");
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        data["id"] = id;
+        return AppointmentModel.fromJson(data);
+      }
+      return null;
+    } catch (e, s) {
+      print("xato updateAppoinment - $e");
+      print("joy updateAppoinment - $s");
+    }
+  }
+
+  Future<bool> deleteAppointment(String id) async {
+    try {
+      final url = Uri.parse("$_baseUrl/$id.json");
+      final response = await http.delete(url);
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e, s) {
+      print("xato deleteAppointment - $e");
+      print("joy deleteAppointment - $s");
     }
     return false;
   }

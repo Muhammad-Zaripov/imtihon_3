@@ -1,5 +1,6 @@
-import 'package:imtihon_3/models/user_model.dart';
-import 'package:imtihon_3/repository/user_remote_repository.dart';
+import '../models/user_model.dart';
+import '../repository/user_local_repository.dart';
+import '../repository/user_remote_repository.dart';
 
 class UserViewmodel {
   static final _singleton = UserViewmodel._private();
@@ -22,11 +23,26 @@ class UserViewmodel {
   }
 
   Future<bool> addUser(UserModel user) async {
-    return await userRepo.addUser(user);
+    bool added = await userRepo.addUser(user);
+    if (added) {
+      await userRepo.getUser();
+    }
+    for (var element in users) {
+      if (element.email.toLowerCase() == user.email.toLowerCase()) {
+        UserLocalRepository userLocalRepository = UserLocalRepository();
+        await userLocalRepository.setUser(element);
+      }
+    }
+    return added;
   }
 
   Future<bool> updateUser(UserModel user) async {
-    return await userRepo.updateUser(user);
+    final rezult = await userRepo.updateUser(user);
+    if (rezult) {
+      int index = users.indexWhere((element) => element.id == user.id);
+      users[index] = user;
+    }
+    return rezult;
   }
 
   Future<String?> checkUser(String email, String password) async {
@@ -36,6 +52,8 @@ class UserViewmodel {
     for (var element in users) {
       if (element.email.toLowerCase() == email.toLowerCase()) {
         if (element.password == password) {
+          UserLocalRepository userLocalRepository = UserLocalRepository();
+          await userLocalRepository.setUser(element);
           return null;
         }
         return "Parol xato";
@@ -55,5 +73,36 @@ class UserViewmodel {
       }
     }
     return false;
+  }
+
+  Future<bool> changePassword({
+    required String newPassword,
+    required String email,
+  }) async {
+    String? userId;
+    for (var element in users) {
+      if (element.email.toLowerCase() == email.toLowerCase()) {
+        userId = element.id;
+        element.password = newPassword;
+      }
+    }
+    if (userId == null) {
+      return false;
+    }
+    return await userRepo.changePassword(
+      userId: userId,
+      newPassword: newPassword,
+    );
+  }
+
+  UserModel? getApFromId(String id) {
+    final index = users.indexWhere((e) => e.id == id);
+    if (index != -1) {
+      return users[index];
+    }
+    userRepo.getUserFromId(id).then((value) {
+      return value;
+    });
+    return null;
   }
 }

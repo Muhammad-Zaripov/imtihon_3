@@ -1,11 +1,12 @@
 import 'dart:convert';
 
-import 'package:imtihon_3/models/user_model.dart';
 import 'package:http/http.dart' as http;
+
+import '../../models/user_model.dart';
 
 class UserRemoteDatasource {
   final _baseUrl =
-      "https://shifoxona-2d5bd-default-rtdb.asia-southeast1.firebasedatabase.app/users.json";
+      "https://shifoxona-2d5bd-default-rtdb.asia-southeast1.firebasedatabase.app/users";
 
   Future<List<UserModel>> getUsers() async {
     try {
@@ -56,5 +57,42 @@ class UserRemoteDatasource {
       print("Update xatolik: $e");
     }
     return false;
+  }
+
+  Future<bool> changePassword({
+    required String userId,
+    required String newPassword,
+  }) async {
+    try {
+      final url = Uri.parse("$_baseUrl/$userId.json");
+
+      final response = await http.patch(
+        url,
+        body: jsonEncode({"password": newPassword}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print("Parolni yangilashda xatolik: $e");
+    }
+    return false;
+  }
+
+  Future<UserModel?> getUserFromId(String id) async {
+    try {
+      final url = Uri.parse("$_baseUrl/$id.json");
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        data["id"] = id;
+        return UserModel.fromJson(data);
+      }
+      return null;
+    } catch (e, s) {
+      print("xato updateAppoinment - $e");
+      print("joy updateAppoinment - $s");
+    }
   }
 }

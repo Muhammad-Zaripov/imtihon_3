@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:imtihon_3/models/doctor_models.dart';
 import 'package:http/http.dart' as http;
+
+import '../../models/doctor_models.dart';
 
 class DoctorRemoteDatasource {
   final _baseUrl =
@@ -57,6 +58,22 @@ class DoctorRemoteDatasource {
       print("xato updateDoctor - $e");
       print("joy updateDoctor - $s");
       return false;
+    }
+  }
+
+  Future<DoctorModel?> getDoctorFromId(String id) async {
+    try {
+      final url = Uri.parse("$_baseUrl/$id.json");
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        data["id"] = id;
+        return DoctorModel.fromJson(data);
+      }
+      return null;
+    } catch (e, s) {
+      print("xato getDoctorFromId - $e");
+      print("joy getDoctorFromId - $s");
     }
   }
 }

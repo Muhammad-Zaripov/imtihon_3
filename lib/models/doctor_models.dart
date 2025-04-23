@@ -10,6 +10,7 @@ class DoctorModel {
   String speciality;
   TimeOfDay start;
   TimeOfDay end;
+  String email;
 
   DoctorModel({
     required this.id,
@@ -21,6 +22,7 @@ class DoctorModel {
     required this.speciality,
     required this.start,
     required this.end,
+    required this.email,
   });
 
   factory DoctorModel.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class DoctorModel {
     List<String> endHour = json["end"].toString().split(":").toList();
 
     return DoctorModel(
+      email: json['email'],
       id: json["id"],
       name: json["name"],
       description: json["description"],
@@ -52,6 +55,7 @@ class DoctorModel {
     }
 
     return {
+      "email": email,
       "name": name,
       "description": description,
       "experience": experience,

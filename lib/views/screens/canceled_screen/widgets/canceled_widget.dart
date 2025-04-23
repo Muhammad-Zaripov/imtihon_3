@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:imtihon_3/viewmodels/appointment_viewmodel.dart';
 
 import '../../../../models/appoinment_models.dart';
+import '../../../../models/doctor_models.dart';
+import '../../../../viewmodels/doctor_viewmodel.dart';
 import '../../../widgets/line_widget.dart';
 
-class CanceledWidget extends StatelessWidget {
-  final AppointmentModel appointment;
-  const CanceledWidget({super.key, required this.appointment});
+class CanceledWidget extends StatefulWidget {
+  final AppointmentModel appo;
+  final VoidCallback onDelete;
+  const CanceledWidget({super.key, required this.appo, required this.onDelete});
+
+  @override
+  State<CanceledWidget> createState() => _CanceledWidgetState();
+}
+
+class _CanceledWidgetState extends State<CanceledWidget> {
+  DoctorModel? doctor;
+  @override
+  void initState() {
+    doctor = DoctorViewmodel().getDoctorFromId(widget.appo.doctorId);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +47,18 @@ class CanceledWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${appointment.date.toLocal().toString()} - ${appointment.time.format(context)}',
+                '${widget.appo.date.toLocal().toIso8601String().split("T")[0]} / ${widget.appo.time.format(context)}',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
               ),
+              SizedBox(height: 12),
               LineWidget(),
+              SizedBox(height: 12),
               Row(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      'https://your-image-url.com',
+                      doctor!.locationImage,
                       width: 109,
                       height: 109,
                       fit: BoxFit.cover,
@@ -51,14 +69,14 @@ class CanceledWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        appointment.doctorId,
+                        doctor!.name,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
-                        appointment.doctorId[0],
+                        doctor!.speciality,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -70,7 +88,7 @@ class CanceledWidget extends StatelessWidget {
                           SvgPicture.asset('assets/svgs/location.svg'),
                           SizedBox(width: 4),
                           Text(
-                            'Clinic Location',
+                            doctor!.location,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey.shade700,
@@ -82,36 +100,24 @@ class CanceledWidget extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: 12),
               LineWidget(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FilledButton(
-                    onPressed: () {},
-                    style: FilledButton.styleFrom(
-                      backgroundColor: Colors.grey.shade300,
-                      minimumSize: Size(147, 37),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                    ),
-                    child: Text(
-                      'Re-Book',
-                      style: TextStyle(color: Colors.black),
-                    ),
+              SizedBox(height: 12),
+              FilledButton(
+                onPressed: () async {
+                  await AppointmentViewmodel().delete(widget.appo.id);
+                  setState(() {
+                    widget.onDelete();
+                  });
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.grey.shade300,
+                  minimumSize: Size(double.infinity, 37),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
                   ),
-                  FilledButton(
-                    onPressed: () {},
-                    style: FilledButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      minimumSize: Size(147, 37),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                    ),
-                    child: Text('Add Review'),
-                  ),
-                ],
+                ),
+                child: Text('Delete', style: TextStyle(color: Colors.black)),
               ),
             ],
           ),

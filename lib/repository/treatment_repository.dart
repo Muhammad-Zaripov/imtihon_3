@@ -1,5 +1,5 @@
-import 'package:imtihon_3/data_sourses/remote_datasoerse/treatment_remote_datasource.dart';
-import 'package:imtihon_3/models/treatment_model.dart';
+import '../data_sourses/remote_datasoerse/treatment_remote_datasource.dart';
+import '../models/treatment_model.dart';
 
 class TreatmentRepository {
   final TreatmentRemoteDatasource treatmentRemote = TreatmentRemoteDatasource();
@@ -14,5 +14,9 @@ class TreatmentRepository {
 
   Future<bool> updateTreatment(TreatmentModel data) async {
     return treatmentRemote.updateTreatment(data);
+  }
+
+  Future<TreatmentModel?> getTrFromId(String id) async {
+    return treatmentRemote.getTrFromId(id);
   }
 }

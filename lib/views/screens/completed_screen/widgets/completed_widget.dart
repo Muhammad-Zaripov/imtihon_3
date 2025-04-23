@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:imtihon_3/models/appoinment_models.dart';
+import '../../../../models/doctor_models.dart';
+import '../../../../viewmodels/doctor_viewmodel.dart';
 import '../../../widgets/line_widget.dart';
 
-class CompletedWidget extends StatelessWidget {
-  final AppointmentModel appointment;
-  const CompletedWidget({super.key, required this.appointment});
+class CompletedWidget extends StatefulWidget {
+  final AppointmentModel appo;
+  const CompletedWidget({super.key, required this.appo});
+
+  @override
+  State<CompletedWidget> createState() => _CompletedWidgetState();
+}
+
+class _CompletedWidgetState extends State<CompletedWidget> {
+  DoctorModel? doctor;
+  @override
+  void initState() {
+    doctor = DoctorViewmodel().getDoctorFromId(widget.appo.doctorId);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,16 +44,18 @@ class CompletedWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${appointment.date.toLocal().toString()} - ${appointment.time.format(context)}',
+                '${widget.appo.date.toLocal().toIso8601String().split('T')[0]} - ${widget.appo.time.format(context)}',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
               ),
+              SizedBox(height: 12),
               LineWidget(),
+              SizedBox(height: 12),
               Row(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      'https://your-image-url.com',
+                      doctor!.locationImage,
                       width: 109,
                       height: 109,
                       fit: BoxFit.cover,
@@ -50,14 +66,14 @@ class CompletedWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        appointment.doctorId,
+                        doctor!.name,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
-                        appointment.doctorId,
+                        doctor!.speciality,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -69,7 +85,7 @@ class CompletedWidget extends StatelessWidget {
                           SvgPicture.asset('assets/svgs/location.svg'),
                           SizedBox(width: 4),
                           Text(
-                            'Clinic Location',
+                            doctor!.location,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey.shade700,
@@ -81,7 +97,9 @@ class CompletedWidget extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: 12),
               LineWidget(),
+              SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

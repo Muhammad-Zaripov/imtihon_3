@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../data_sourses/remote_datasoerse/doctor_remote_datasource.dart';
-import '../../../../models/doctor_models.dart';
+import 'package:imtihon_3/models/appoinment_models.dart';
+import '../../../../viewmodels/appointment_viewmodel.dart';
 import '../widgets/uncoming_widget.dart';
 
 class UpcomingScreen extends StatefulWidget {
@@ -11,28 +11,13 @@ class UpcomingScreen extends StatefulWidget {
 }
 
 class _UpcomingScreenState extends State<UpcomingScreen> {
-  List<DoctorModel> doctors = [];
-  bool isLoading = true;
+  bool isLoading = false;
+  List<AppointmentModel> completedAppointments = [];
 
   @override
   void initState() {
+    completedAppointments = AppointmentViewmodel().getByStatus("upcoming");
     super.initState();
-    loadDoctors();
-  }
-
-  void loadDoctors() async {
-    final datasource = DoctorRemoteDatasource();
-    final result = await datasource.getDoctors();
-    setState(() {
-      doctors = result;
-      isLoading = false;
-    });
-  }
-
-  String formatTimeOfDay(TimeOfDay time) {
-    final now = DateTime.now();
-    final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-    return "${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
   }
 
   @override
@@ -42,14 +27,19 @@ class _UpcomingScreenState extends State<UpcomingScreen> {
     }
     return ListView.separated(
       separatorBuilder: (context, index) => SizedBox(height: 10),
-      itemCount: doctors.length,
+      itemCount: completedAppointments.length,
       itemBuilder: (context, index) {
-        final doctor = doctors[index];
+        final appo = completedAppointments[index];
+
         return UncomingWidget(
-          location: doctor.location,
-          name: doctor.name,
-          speciality: doctor.speciality,
-          start: formatTimeOfDay(doctor.start),
+          appo: appo,
+          onUpdate: () {
+            setState(() {
+              completedAppointments = AppointmentViewmodel().getByStatus(
+                "upcoming",
+              );
+            });
+          },
         );
       },
     );

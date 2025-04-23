@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:imtihon_3/models/appoinment_models.dart';
 import '../../../../viewmodels/appointment_viewmodel.dart';
 import '../widgets/canceled_widget.dart';
 
@@ -10,25 +11,32 @@ class CanceledScreen extends StatefulWidget {
 }
 
 class _CanceledScreenState extends State<CanceledScreen> {
-  final controller = AppointmentController();
+  bool isLoading = false;
 
+  List<AppointmentModel> completedAppointments = [];
   @override
   void initState() {
+    completedAppointments = AppointmentViewmodel().getByStatus("canceled");
     super.initState();
-    controller.init().then((_) {
-      setState(() {});
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final completedAppointments = controller.getByStatus("canceled");
     return ListView.separated(
-      padding: EdgeInsets.all(16),
       itemCount: completedAppointments.length,
       separatorBuilder: (context, index) => SizedBox(height: 12),
       itemBuilder: (context, index) {
-        return CanceledWidget(appointment: completedAppointments[index]);
+        final appo = completedAppointments[index];
+        return CanceledWidget(
+          appo: appo,
+          onDelete: () {
+            setState(() {
+              completedAppointments = AppointmentViewmodel().getByStatus(
+                "canceled",
+              );
+            });
+          },
+        );
       },
     );
   }

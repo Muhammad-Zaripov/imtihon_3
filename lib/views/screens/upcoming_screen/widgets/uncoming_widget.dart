@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:imtihon_3/models/appoinment_models.dart';
+import 'package:imtihon_3/viewmodels/appointment_viewmodel.dart';
 
+import '../../../../models/doctor_models.dart';
+import '../../../../viewmodels/doctor_viewmodel.dart';
 import '../../../widgets/line_widget.dart';
 
-class UncomingWidget extends StatelessWidget {
-  final String location;
-  final String name;
-  final String speciality;
-  final String start;
+class UncomingWidget extends StatefulWidget {
+  final AppointmentModel appo;
+  final VoidCallback onUpdate;
+  const UncomingWidget({super.key, required this.appo, required this.onUpdate});
 
-  UncomingWidget({
-    super.key,
-    required this.location,
-    required this.name,
-    required this.speciality,
-    required this.start,
-  });
+  @override
+  State<UncomingWidget> createState() => _UncomingWidgetState();
+}
+
+class _UncomingWidgetState extends State<UncomingWidget> {
+  DoctorModel? doctor;
+  @override
+  void initState() {
+    doctor = DoctorViewmodel().getDoctorFromId(widget.appo.doctorId);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +34,7 @@ class UncomingWidget extends StatelessWidget {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.grey.withOpacity(0.3),
               blurRadius: 5,
               spreadRadius: 1.5,
@@ -41,7 +49,7 @@ class UncomingWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                start,
+                '${widget.appo.date.toLocal().toIso8601String().split('T')[0]} / ${widget.appo.time.format(context)}',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
               ),
               LineWidget(),
@@ -51,7 +59,7 @@ class UncomingWidget extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      'https://s3-alpha-sig.figma.com/img/86b5/e652/0800f3ee36c944ded270e36c1763aaed?Expires=1745798400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=HGe25vWaTCtN1ykOKApiTrWtVZ41-ZnCs2peT-ME64gQ9TYH55WPyr~HxhvZR9pt0BT~vcDRCDMspd1707woO-epWiGXTPjw86E16DZbjGi1yxBqCQI9KzrOddGTLL2uNLAlZia2BqEMdlWPVsDheoBp6RhdIV5yAaRsRYJHcGR~t9qGQDlZAnsqa5ZNZaLtWmFuv70u-D3IaQt6zMT6XLB5Qg3uMcYd4bAwmgZl3YBU9k2RHfw7rxENbGomIGMRGYt0JCpV6gQ6z46tWF~i-cHJhZxwI3W61-n5ohPLBsDjJR7B25pVvkq5wbTcBCAdRSAV~q3GtWta~lj7Qdp11Q__',
+                      doctor!.locationImage,
                       width: 109,
                       height: 109,
                       fit: BoxFit.cover,
@@ -63,14 +71,14 @@ class UncomingWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        name,
+                        doctor!.name,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
-                        speciality,
+                        doctor!.speciality,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -82,7 +90,7 @@ class UncomingWidget extends StatelessWidget {
                         children: [
                           SvgPicture.asset('assets/svgs/location.svg'),
                           Text(
-                            location,
+                            doctor!.location,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -100,7 +108,15 @@ class UncomingWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   FilledButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() async {
+                        await AppointmentViewmodel().updateStatus(
+                          widget.appo.id,
+                          "canceled",
+                        );
+                        widget.onUpdate();
+                      });
+                    },
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.grey.shade300,
                       minimumSize: Size(147, 37),

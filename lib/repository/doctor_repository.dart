@@ -1,5 +1,5 @@
-import 'package:imtihon_3/data_sourses/remote_datasoerse/doctor_remote_datasource.dart';
-import 'package:imtihon_3/models/doctor_models.dart';
+import '../data_sourses/remote_datasoerse/doctor_remote_datasource.dart';
+import '../models/doctor_models.dart';
 
 class DoctorRepository {
   final DoctorRemoteDatasource doctorRemote = DoctorRemoteDatasource();
@@ -8,11 +8,15 @@ class DoctorRepository {
     return doctorRemote.getDoctors();
   }
 
-  Future<bool> addUser(DoctorModel doctor) async {
+  Future<bool> addDoctor(DoctorModel doctor) async {
     return doctorRemote.addDoctor(doctor);
   }
 
-  Future<bool> updateUser(DoctorModel doctor) async {
+  Future<bool> updateDoctor(DoctorModel doctor) async {
     return doctorRemote.updateDoctor(doctor);
+  }
+
+  Future<DoctorModel?> getDoctorFromId(String id) async {
+    return doctorRemote.getDoctorFromId(id);
   }
 }
