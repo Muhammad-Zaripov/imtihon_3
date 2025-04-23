@@ -16,7 +16,7 @@ class AppointmentController {
   }
 
   List<AppointmentModel> getByStatus(String status) {
-    return _appointments.where((e) => e.status == status).toList();
+    return _appointments.where((e) => e.status == "completed").toList();
   }
 
   Future<bool> updateStatus(String id, String newStatus) async {

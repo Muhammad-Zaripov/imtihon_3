@@ -57,7 +57,7 @@ class CompletedWidget extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        appointment.doctorId[0],
+                        appointment.doctorId,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,

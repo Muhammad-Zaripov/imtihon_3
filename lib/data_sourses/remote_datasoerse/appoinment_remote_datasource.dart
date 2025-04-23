@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class AppoinmentRemoteDatasource {
   final _baseUrl =
-      "https://shifoxona-2d5bd-default-rtdb.asia-southeast1.firebasedatabase.app/appoinments.json";
+      "https://shifoxona-2d5bd-default-rtdb.asia-southeast1.firebasedatabase.app/appoinments";
 
   Future<List<AppointmentModel>> getAppoinments() async {
     try {
