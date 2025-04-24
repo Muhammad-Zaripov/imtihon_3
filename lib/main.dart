@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:imtihon_3/viewmodels/appointment_viewmodel.dart';
 import 'package:imtihon_3/viewmodels/doctor_viewmodel.dart';
 import 'package:imtihon_3/viewmodels/user_viewmodel.dart';
-import 'views/widgets/booking_history_tab_bar_widget.dart';
+import 'package:imtihon_3/views/widgets/booking_history_tab_bar_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
